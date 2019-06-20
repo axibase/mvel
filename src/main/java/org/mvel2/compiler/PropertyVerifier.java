@@ -18,6 +18,18 @@
 
 package org.mvel2.compiler;
 
+import org.mvel2.CompileException;
+import org.mvel2.ErrorDetail;
+import org.mvel2.MVEL;
+import org.mvel2.ParserContext;
+import org.mvel2.ast.Function;
+import org.mvel2.optimizers.AbstractOptimizer;
+import org.mvel2.optimizers.impl.refl.nodes.WithAccessor;
+import org.mvel2.util.ErrorUtil;
+import org.mvel2.util.NullType;
+import org.mvel2.util.ParseTools;
+import org.mvel2.util.StringAppender;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Member;
@@ -34,19 +46,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.mvel2.CompileException;
-import org.mvel2.ErrorDetail;
-import org.mvel2.MVEL;
-import org.mvel2.ParserContext;
-import org.mvel2.ast.Function;
-import org.mvel2.optimizers.AbstractOptimizer;
-import org.mvel2.optimizers.impl.refl.nodes.WithAccessor;
-import org.mvel2.util.ErrorUtil;
-import org.mvel2.util.NullType;
-import org.mvel2.util.ParseTools;
-import org.mvel2.util.StringAppender;
-
-import static org.mvel2.util.ParseTools.*;
+import static org.mvel2.util.ParseTools.balancedCapture;
+import static org.mvel2.util.ParseTools.balancedCaptureWithLineAccounting;
+import static org.mvel2.util.ParseTools.findClass;
+import static org.mvel2.util.ParseTools.getBestCandidate;
+import static org.mvel2.util.ParseTools.getSubComponentType;
+import static org.mvel2.util.ParseTools.parseParameterList;
 import static org.mvel2.util.PropertyTools.getFieldOrAccessor;
 
 /**
@@ -466,14 +471,14 @@ public class PropertyVerifier extends AbstractOptimizer {
       }
       else {
         Function f = pCtx.getFunction(name);
-        if (f != null && f.getEgressType() != null) {
+        if (f != null) {
           resolvedExternally = false;
           f.checkArgumentCount(
                   parseParameterList(
                           (((cursor = balancedCapture(expr, cursor, end, '(')) - st) > 1 ?
                            ParseTools.subset(expr, st + 1, cursor - st - 1) : new char[0]), 0, -1).size());
-
-          return f.getEgressType();
+          cursor++;
+          return f.getEgressType() != null ? f.getEgressType() : Object.class;
         }
         else if (pCtx.hasVarOrInput("this")) {
           if (pCtx.isStrictTypeEnforcement()) {
