@@ -1,5 +1,35 @@
 package org.mvel2.tests.core;
 
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
+
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.mvel2.*;
@@ -4801,6 +4831,19 @@ public class CoreConfidenceTests extends AbstractTest {
     Serializable compiledExpr = MVEL.compileExpression(expression, pctx);
     int result = (Integer)MVEL.executeExpression(compiledExpr, null, factory);
     assertEquals(expectedResult, result);
+  }
+
+  public void testVariableMapWithoutNullKeySupportWhenMethodUsed() {
+    final String expr = "var t = identity('test')";
+    final Serializable compiled = MVEL.compileExpression(expr);
+    final Object result = MVEL.executeExpression(compiled, new Functions(), new ConcurrentHashMap());
+    assertEquals("test", result);
+  }
+
+  public static class Functions {
+    public String identity(String s) {
+      return s;
+    }
   }
 
   @Test
