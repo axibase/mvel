@@ -26,10 +26,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import junit.framework.TestCase;
+import org.junit.Test;
 import org.mvel2.CompileException;
 import org.mvel2.DataConversion;
 import org.mvel2.MVEL;
@@ -4695,5 +4697,21 @@ public class CoreConfidenceTests extends AbstractTest {
     Serializable compiledExpr = MVEL.compileExpression(expression, pctx);
     int result = (Integer)MVEL.executeExpression(compiledExpr, null, factory);
     assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void testMapAccessByDotProperty() {
+    ParserContext parserContext = ParserContext.create().stronglyTyped();
+    parserContext.addInput("t", StringMap.class);
+    final ExpressionCompiler expressionCompiler = new ExpressionCompiler("t.a", parserContext);
+    expressionCompiler.compile();
+    assertEquals(String.class, expressionCompiler.getReturnType());
+  }
+
+  public static final class StringMap extends LinkedHashMap<String, String> {
+    @Override
+    public String get(Object key) {
+      return super.get(key);
+    }
   }
 }
