@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
 
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -4707,11 +4708,25 @@ public class CoreConfidenceTests extends AbstractTest {
     expressionCompiler.compile();
     assertEquals(String.class, expressionCompiler.getReturnType());
   }
+  
+  @Test
+  public void testVariableMapWithoutNullKeySupportWhenMethodUsed() {
+    final String expr = "var t = identity('test')";
+    final Serializable compiled = MVEL.compileExpression(expr);
+    final Object result = MVEL.executeExpression(compiled, new Functions(), new ConcurrentHashMap());
+    assertEquals("test", result);
+  }
 
-  public static final class StringMap extends LinkedHashMap<String, String> {
+  public static class StringMap extends LinkedHashMap<String, String> {
     @Override
     public String get(Object key) {
       return super.get(key);
+    }
+  }
+
+  public static class Functions {
+    public String identity(String s) {
+      return s;
     }
   }
 }
