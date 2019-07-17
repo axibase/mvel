@@ -26,11 +26,20 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.ConcurrentHashMap;
 
 import junit.framework.TestCase;
+import org.junit.Test;
+import org.mvel2.CompileException;
+import org.mvel2.DataConversion;
+import org.mvel2.MVEL;
+import org.mvel2.Macro;
+import org.mvel2.ParserConfiguration;
+import org.mvel2.ParserContext;
+import org.mvel2.PropertyAccessor;
 import org.junit.Test;
 import org.mvel2.*;
 import org.junit.Assert;
@@ -4831,19 +4840,6 @@ public class CoreConfidenceTests extends AbstractTest {
     Serializable compiledExpr = MVEL.compileExpression(expression, pctx);
     int result = (Integer)MVEL.executeExpression(compiledExpr, null, factory);
     assertEquals(expectedResult, result);
-  }
-
-  public void testVariableMapWithoutNullKeySupportWhenMethodUsed() {
-    final String expr = "var t = identity('test')";
-    final Serializable compiled = MVEL.compileExpression(expr);
-    final Object result = MVEL.executeExpression(compiled, new Functions(), new ConcurrentHashMap());
-    assertEquals("test", result);
-  }
-
-  public static class Functions {
-    public String identity(String s) {
-      return s;
-    }
   }
 
   @Test
