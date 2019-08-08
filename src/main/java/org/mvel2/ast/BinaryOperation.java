@@ -86,8 +86,7 @@ public class BinaryOperation extends BooleanNode {
           if (right.isLiteral() && requiresConversion && canConvert(left.getEgressType(), right.getEgressType())) {
             Class targetType = isAritmeticOperation(operation) ? egressType : left.getEgressType();
             this.right = new LiteralNode(convert(right.getReducedValueAccelerated(null, null, null), targetType), pCtx);
-          }
-          else if ( !(areCompatible(left.getEgressType(), right.getEgressType()) ||
+          } else if ( !(areCompatible(left.getEgressType(), right.getEgressType()) ||
                       isValidEqualityCheck(operation, left.getEgressType(), right.getEgressType()) ||
                       isValidComparison(operation, left.getEgressType(), right.getEgressType()))
           ) {
@@ -135,7 +134,7 @@ public class BinaryOperation extends BooleanNode {
              CompatibilityStrategy.areComparisonCompatible(rightClass, leftClass));
   }
 
-  private boolean isValidEqualityCheck(int operation,Class<?> leftClass, Class<?> rightClass) {
+  private boolean isValidEqualityCheck(int operation, Class<?> leftClass, Class<?> rightClass) {
     return (operation == Operator.EQUAL || operation == Operator.NEQUAL) &&
             (CompatibilityStrategy.areEqualityCompatible(leftClass, rightClass) ||
              CompatibilityStrategy.areEqualityCompatible(rightClass, leftClass));
