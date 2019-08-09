@@ -4931,15 +4931,15 @@ public class CoreConfidenceTests extends AbstractTest {
 
   @Test
   public void testBigDecimalNanOperationWithoutNanSupport() {
-      final HashMap<String, Object> vars = new HashMap<String, Object>();
-      vars.put("a", BigDecimal.ZERO);
-      vars.put("b", Double.NaN);
-      try {
-        final Object res = executeExpression(compileExpression("a < b"), vars);
-        fail("Exception must be thrown");
-      } catch (Exception e) {
-        assertEquals("Could not convert b (NaN) to BigDecimal: Infinite or NaN", e.getMessage());
-      }
+    final HashMap<String, Object> vars = new HashMap<String, Object>();
+    vars.put("a", BigDecimal.ZERO);
+    vars.put("b", Double.NaN);
+    try {
+      final Object res = executeExpression(compileExpression("a < b"), vars);
+      fail("Exception must be thrown");
+    } catch (Exception e) {
+      assertEquals("Could not convert b (NaN) to BigDecimal: Infinite or NaN", e.getMessage());
+    }
   }
 
   @Test
@@ -4989,15 +4989,15 @@ public class CoreConfidenceTests extends AbstractTest {
   }
 
   public void testLiteralToStringWithSpaceASM() throws Throwable {
-      OptimizerFactory.setDefaultOptimizer("ASM");
-      testLiteralToStringWithSpace();
+    OptimizerFactory.setDefaultOptimizer("ASM");
+    testLiteralToStringWithSpace();
   }
 
   public void testLiteralToStringWithSpace() throws Throwable {
-      String expr = "'foo'. hashCode()";
-      int hashCode = "foo". hashCode();
-      Serializable s = MVEL.compileExpression(expr);
-      assertEquals(Integer.valueOf(hashCode), MVEL.executeExpression(s));
+    String expr = "'foo'. hashCode()";
+    int hashCode = "foo". hashCode();
+    Serializable s = MVEL.compileExpression(expr);
+    assertEquals(Integer.valueOf(hashCode), MVEL.executeExpression(s));
   }
 
   public void testGetBestCandidateForBigDecimalArg() {

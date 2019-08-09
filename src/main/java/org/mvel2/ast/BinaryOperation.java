@@ -134,7 +134,7 @@ public class BinaryOperation extends BooleanNode {
              CompatibilityStrategy.areComparisonCompatible(rightClass, leftClass));
   }
 
-  private boolean isValidEqualityCheck(int operation, Class<?> leftClass, Class<?> rightClass) {
+  private boolean isValidEqualityCheck(int operation,Class<?> leftClass, Class<?> rightClass) {
     return (operation == Operator.EQUAL || operation == Operator.NEQUAL) &&
             (CompatibilityStrategy.areEqualityCompatible(leftClass, rightClass) ||
              CompatibilityStrategy.areEqualityCompatible(rightClass, leftClass));
