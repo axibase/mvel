@@ -4710,4 +4710,30 @@ public class CoreConfidenceTests extends AbstractTest {
     final CompiledExpression compiledExpression = expressionCompiler.compile();
     return MVEL.executeExpression(compiledExpression, Collections.singletonMap("v", variableValue));
   }
+
+  @Test
+  public void testWrongAccess() {
+    final ParserContext context = ParserContext.create().stronglyTyped();
+    context.addVariable("v", VarsHolder.class);
+    try {
+      final ExpressionCompiler expressionCompiler = new ExpressionCompiler("v.a", context);
+      final CompiledExpression compiledExpression = expressionCompiler.compile();
+    } catch (Exception e) {
+      assertEquals(PropertyAccessExceptionWithContext.class, e.getClass());
+      assertEquals(VarsHolder.class, ((PropertyAccessExceptionWithContext) e).getCtx());
+    }
+  }
+
+  public static final class VarsHolder {
+    private final StringMap vars;
+
+    public VarsHolder() {
+      vars = new StringMap();
+      vars.put("a", "42");
+    }
+
+    public StringMap getVars() {
+      return vars;
+    }
+  }
 }
