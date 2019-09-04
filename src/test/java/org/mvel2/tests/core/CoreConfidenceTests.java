@@ -4763,4 +4763,24 @@ public class CoreConfidenceTests extends AbstractTest {
         assertEquals("Could not convert b (NaN) to BigDecimal: Infinite or NaN", e.getMessage());
       }
   }
+
+  @Test
+  public void testBigDecimalNanOperationWithoutNanSupportGetter() {
+    try {
+      final Object res = executeExpression(compileExpression("decimalValue < doubleValue"), new Values());
+      fail("Exception must be thrown");
+    } catch (Exception e) {
+      assertEquals("Could not convert doubleValue (NaN) to BigDecimal: Infinite or NaN", e.getMessage());
+    }
+  }
+
+  public static class Values {
+    public BigDecimal getDecimalValue() {
+      return BigDecimal.ZERO;
+    }
+
+    public double getDoubleValue() {
+      return Double.NaN;
+    }
+  }
 }
