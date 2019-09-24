@@ -4783,4 +4783,12 @@ public class CoreConfidenceTests extends AbstractTest {
       return Double.NaN;
     }
   }
+
+  @Test
+  public void testUndeclaredFunctionsResolution() {
+    ParserContext parserContext = ParserContext.create();
+    String expression = "undeclared(v1, v2).toString()";
+    MVEL.compileExpression(expression, parserContext);
+    assertEquals(Collections.singleton("undeclared"), parserContext.getPossiblyUndeclaredFunctions());
+  }
 }
