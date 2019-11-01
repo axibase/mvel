@@ -56,19 +56,16 @@ public class CompiledIncludeNode extends Node {
     }
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
     String file = MVEL.executeExpression(cIncludeExpression, ctx, factory, String.class);
 
     if (this.cPreExpression != null) {
       MVEL.executeExpression(cPreExpression, ctx, factory);
     }
-
-    if (next != null) {
-      return next.eval(runtime, appender.append(String.valueOf(TemplateRuntime.eval(readFile(runtime, file, ctx, factory), ctx, factory))), ctx, factory);
-    }
-    else {
-      return appender.append(String.valueOf(MVEL.eval(readFile(runtime, file, ctx, factory), ctx, factory)));
-    }
+    final Object value = next != null ?
+            TemplateRuntime.eval(readFile(runtime, file, ctx, factory), ctx, factory) :
+            MVEL.eval(readFile(runtime, file, ctx, factory));
+    appender.append(runtime.getPostProcessor().process(value));
   }
 
   private String readFile(TemplateRuntime runtime, String fileName, Object ctx, VariableResolverFactory factory) {

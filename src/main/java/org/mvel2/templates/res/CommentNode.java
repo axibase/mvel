@@ -37,11 +37,8 @@ public class CommentNode extends Node {
     this.next = next;
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
-    if (next != null)
-      return next.eval(runtime, appender, ctx, factory);
-    else
-      return null;
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+    // do nothing
   }
 
   public boolean demarcate(Node terminatingNode, char[] template) {

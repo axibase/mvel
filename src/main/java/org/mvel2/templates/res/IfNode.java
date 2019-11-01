@@ -55,10 +55,15 @@ public class IfNode extends Node {
     return true;
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+  @Override
+  public Node getNextExecutableNode(Object ctx, VariableResolverFactory factory) {
     if (cEnd == cStart || MVEL.eval(contents, cStart, cEnd - cStart, ctx, factory, Boolean.class)) {
-      return trueNode.eval(runtime, appender, ctx, factory);
+      return trueNode;
     }
-    return next != null ? next.eval(runtime, appender, ctx, factory) : null;
+    return next;
+  }
+
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+    // do nothing
   }
 }

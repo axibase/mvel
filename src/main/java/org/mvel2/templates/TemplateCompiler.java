@@ -332,7 +332,7 @@ public class TemplateCompiler {
   }
 
   private Node markTextNode(Node n) {
-    int s = (n.getEnd() > lastTextRangeEnding ? n.getEnd() : lastTextRangeEnding);
+    int s = Math.max(n.getEnd(), lastTextRangeEnding);
 
     if (s < start) {
       return n.next = new TextNode(s, lastTextRangeEnding = start - 1);

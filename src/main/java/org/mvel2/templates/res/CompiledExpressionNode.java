@@ -26,8 +26,6 @@ import org.mvel2.templates.util.TemplateOutputStream;
 
 import java.io.Serializable;
 
-import static java.lang.String.valueOf;
-
 public class CompiledExpressionNode extends ExpressionNode {
   private Serializable ce;
 
@@ -41,9 +39,8 @@ public class CompiledExpressionNode extends ExpressionNode {
     ce = MVEL.compileExpression(template, cStart, cEnd - cStart, context);
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
-    appender.append(valueOf(MVEL.executeExpression(ce, ctx, factory)));
-    return next != null ? next.eval(runtime, appender, ctx, factory) : null;
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+    appender.append(runtime.getPostProcessor().process(MVEL.executeExpression(ce, ctx, factory)));
   }
 
   public String toString() {

@@ -46,6 +46,7 @@ public class TemplateRuntime {
   private Node rootNode;
   private String baseDir;
   private ExecutionStack relPath;
+  private ExecutableValuePostProcessor postProcessor = ExecutableValuePostProcessor.DEFAULT;
 
 
   public TemplateRuntime(char[] template, TemplateRegistry namedTemplateRegistry, Node rootNode, String baseDir) {
@@ -55,31 +56,31 @@ public class TemplateRuntime {
     this.baseDir = baseDir;
   }
 
-  public static Object eval(File file, Object ctx, VariableResolverFactory vars, TemplateRegistry registry) {
+  public static String eval(File file, Object ctx, VariableResolverFactory vars, TemplateRegistry registry) {
     return execute(compileTemplate(TemplateTools.readInFile(file)), ctx, vars, registry);
   }
 
-  public static Object eval(InputStream instream) {
+  public static String eval(InputStream instream) {
     return eval(instream, null, new ImmutableDefaultFactory(), null);
   }
 
-  public static Object eval(InputStream instream, Object ctx) {
+  public static String eval(InputStream instream, Object ctx) {
     return eval(instream, ctx, new ImmutableDefaultFactory(), null);
   }
 
-  public static Object eval(InputStream instream, Object ctx, VariableResolverFactory vars) {
+  public static String eval(InputStream instream, Object ctx, VariableResolverFactory vars) {
     return eval(instream, ctx, vars);
   }
 
-  public static Object eval(InputStream instream, Object ctx, Map vars) {
+  public static String eval(InputStream instream, Object ctx, Map vars) {
     return eval(instream, ctx, new MapVariableResolverFactory(vars), null);
   }
 
-  public static Object eval(InputStream instream, Object ctx, Map vars, TemplateRegistry registry) {
+  public static String eval(InputStream instream, Object ctx, Map vars, TemplateRegistry registry) {
     return execute(compileTemplate(TemplateTools.readStream(instream)), ctx, new MapVariableResolverFactory(vars), registry);
   }
 
-  public static Object eval(InputStream instream, Object ctx, VariableResolverFactory vars, TemplateRegistry registry) {
+  public static String eval(InputStream instream, Object ctx, VariableResolverFactory vars, TemplateRegistry registry) {
     return execute(compileTemplate(TemplateTools.readStream(instream)), ctx, vars, registry);
   }
 
@@ -87,7 +88,7 @@ public class TemplateRuntime {
     execute(compileTemplate(TemplateTools.readStream(instream)), ctx, vars, register, stream);
   }
 
-  public static Object eval(String template, Map vars) {
+  public static String eval(String template, Map vars) {
     return execute(compileTemplate(template), null, new MapVariableResolverFactory(vars));
   }
 
@@ -95,11 +96,11 @@ public class TemplateRuntime {
     execute(compileTemplate(template), null, new MapVariableResolverFactory(vars), null, stream);
   }
 
-  public static Object eval(String template, Object ctx) {
+  public static String eval(String template, Object ctx) {
     return execute(compileTemplate(template), ctx);
   }
 
-  public static Object eval(String template, Object ctx, Map vars) {
+  public static String eval(String template, Object ctx, Map vars) {
     return execute(compileTemplate(template), ctx, new MapVariableResolverFactory(vars));
   }
 
@@ -107,7 +108,7 @@ public class TemplateRuntime {
     execute(compileTemplate(template), ctx, new MapVariableResolverFactory(vars), null, stream);
   }
 
-  public static Object eval(String template, Object ctx, VariableResolverFactory vars) {
+  public static String eval(String template, Object ctx, VariableResolverFactory vars) {
     return execute(compileTemplate(template), ctx, vars);
   }
 
@@ -119,7 +120,7 @@ public class TemplateRuntime {
     execute(compileTemplate(template), ctx, vars, null, stream);
   }
 
-  public static Object eval(String template, Map vars, TemplateRegistry registry) {
+  public static String eval(String template, Map vars, TemplateRegistry registry) {
     return execute(compileTemplate(template), null, new MapVariableResolverFactory(vars), registry);
   }
 
@@ -131,7 +132,7 @@ public class TemplateRuntime {
     execute(compileTemplate(template), null, new MapVariableResolverFactory(vars), registry, stream);
   }
 
-  public static Object eval(String template, Object ctx, Map vars, TemplateRegistry registry) {
+  public static String eval(String template, Object ctx, Map vars, TemplateRegistry registry) {
     return execute(compileTemplate(template), ctx, new MapVariableResolverFactory(vars), registry);
   }
 
@@ -139,7 +140,7 @@ public class TemplateRuntime {
     execute(compileTemplate(template), ctx, new MapVariableResolverFactory(vars), registry, stream);
   }
 
-  public static Object eval(String template, Object ctx, VariableResolverFactory vars, TemplateRegistry registry) {
+  public static String eval(String template, Object ctx, VariableResolverFactory vars, TemplateRegistry registry) {
     return execute(compileTemplate(template), ctx, vars, registry);
   }
 
@@ -151,7 +152,7 @@ public class TemplateRuntime {
     execute(compileTemplate(template), ctx, vars, registry, stream);
   }
 
-  public static Object execute(CompiledTemplate compiled) {
+  public static String execute(CompiledTemplate compiled) {
     return execute(compiled.getRoot(), compiled.getTemplate(), new StringAppender(), null, new ImmutableDefaultFactory(), null);
   }
 
@@ -159,7 +160,7 @@ public class TemplateRuntime {
     execute(compiled.getRoot(), compiled.getTemplate(), new StandardOutputStream(stream), null, new ImmutableDefaultFactory(), null);
   }
 
-  public static Object execute(CompiledTemplate compiled, Object context) {
+  public static String execute(CompiledTemplate compiled, Object context) {
     return execute(compiled.getRoot(), compiled.getTemplate(), new StringAppender(), context, new ImmutableDefaultFactory(), null);
   }
 
@@ -167,7 +168,7 @@ public class TemplateRuntime {
     execute(compiled.getRoot(), compiled.getTemplate(), new StandardOutputStream(stream), context, new ImmutableDefaultFactory(), null);
   }
 
-  public static Object execute(CompiledTemplate compiled, Map vars) {
+  public static String execute(CompiledTemplate compiled, Map vars) {
     return execute(compiled.getRoot(), compiled.getTemplate(), new StringBuilder(), null, new MapVariableResolverFactory(vars), null);
   }
 
@@ -175,7 +176,7 @@ public class TemplateRuntime {
     execute(compiled.getRoot(), compiled.getTemplate(), new StandardOutputStream(stream), null, new MapVariableResolverFactory(vars), null);
   }
 
-  public static Object execute(CompiledTemplate compiled, Object context, Map vars) {
+  public static String execute(CompiledTemplate compiled, Object context, Map vars) {
     return execute(compiled.getRoot(), compiled.getTemplate(), new StringBuilder(), context, new MapVariableResolverFactory(vars), null);
   }
 
@@ -183,7 +184,7 @@ public class TemplateRuntime {
     execute(compiled.getRoot(), compiled.getTemplate(), new StandardOutputStream(stream), context, new MapVariableResolverFactory(vars), null);
   }
 
-  public static Object execute(CompiledTemplate compiled, Object context, TemplateRegistry registry) {
+  public static String execute(CompiledTemplate compiled, Object context, TemplateRegistry registry) {
     return execute(compiled.getRoot(), compiled.getTemplate(), new StringBuilder(), context, null, registry);
   }
 
@@ -191,7 +192,7 @@ public class TemplateRuntime {
     execute(compiled.getRoot(), compiled.getTemplate(), new StandardOutputStream(stream), context, null, registry);
   }
 
-  public static Object execute(CompiledTemplate compiled, Object context, Map vars, TemplateRegistry registry) {
+  public static String execute(CompiledTemplate compiled, Object context, Map vars, TemplateRegistry registry) {
     return execute(compiled.getRoot(), compiled.getTemplate(), new StringBuilder(), context, new MapVariableResolverFactory(vars), registry);
   }
 
@@ -199,19 +200,19 @@ public class TemplateRuntime {
     execute(compiled.getRoot(), compiled.getTemplate(), new StandardOutputStream(stream), context, new MapVariableResolverFactory(vars), registry);
   }
 
-  public static Object execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory) {
+  public static String execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory) {
     return execute(compiled.getRoot(), compiled.getTemplate(), new StringBuilder(), context, factory, null);
   }
 
-  public static Object execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory, TemplateRegistry registry) {
+  public static String execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory, TemplateRegistry registry) {
     return execute(compiled.getRoot(), compiled.getTemplate(), new StringBuilder(), context, factory, registry);
   }
 
-  public static Object execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory, String baseDir) {
+  public static String execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory, String baseDir) {
     return execute(compiled.getRoot(), compiled.getTemplate(), new StringBuilder(), context, factory, null, baseDir);
   }
 
-  public static Object execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory, TemplateRegistry registry, String baseDir) {
+  public static String execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory, TemplateRegistry registry, String baseDir) {
     return execute(compiled.getRoot(), compiled.getTemplate(), new StringBuilder(), context, factory, registry, baseDir);
   }
 
@@ -223,53 +224,53 @@ public class TemplateRuntime {
     execute(compiled.getRoot(), compiled.getTemplate(), new StandardOutputStream(stream), context, factory, null, baseDir);
   }
 
-  public static Object execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory, TemplateRegistry registry, OutputStream stream) {
+  public static String execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory, TemplateRegistry registry, OutputStream stream) {
     return execute(compiled.getRoot(), compiled.getTemplate(), new StandardOutputStream(stream), context, factory, registry);
   }
 
 
-  public static Object execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory, TemplateRegistry registry, TemplateOutputStream stream) {
+  public static String execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory, TemplateRegistry registry, TemplateOutputStream stream) {
     return execute(compiled.getRoot(), compiled.getTemplate(), stream, context, factory, registry);
   }
 
-  public static Object execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory, TemplateRegistry registry, TemplateOutputStream stream, String basedir) {
+  public static String execute(CompiledTemplate compiled, Object context, VariableResolverFactory factory, TemplateRegistry registry, TemplateOutputStream stream, String basedir) {
     return execute(compiled.getRoot(), compiled.getTemplate(), stream, context, factory, registry, basedir);
   }
 
-  public static Object execute(Node root, char[] template,
+  public static String execute(Node root, char[] template,
                                StringAppender appender, Object context,
                                VariableResolverFactory factory, TemplateRegistry registry) {
 
     return new TemplateRuntime(template, registry, root, ".").execute(appender, context, factory);
   }
 
-  public Object execute(StringBuilder appender, Object context, VariableResolverFactory factory) {
+  public String execute(StringBuilder appender, Object context, VariableResolverFactory factory) {
     return execute(new StringBuilderStream(appender), context, factory);
   }
 
 
-  public static Object execute(Node root, char[] template,
+  public static String execute(Node root, char[] template,
                                StringBuilder appender, Object context,
                                VariableResolverFactory factory, TemplateRegistry registry) {
 
     return new TemplateRuntime(template, registry, root, ".").execute(appender, context, factory);
   }
 
-  public static Object execute(Node root, char[] template,
+  public static String execute(Node root, char[] template,
                                StringBuilder appender, Object context,
                                VariableResolverFactory factory, TemplateRegistry registry, String baseDir) {
 
     return new TemplateRuntime(template, registry, root, baseDir).execute(appender, context, factory);
   }
 
-  public static Object execute(Node root, char[] template,
+  public static String execute(Node root, char[] template,
                                TemplateOutputStream appender, Object context,
                                VariableResolverFactory factory, TemplateRegistry registry) {
 
     return new TemplateRuntime(template, registry, root, ".").execute(appender, context, factory);
   }
 
-  public static Object execute(Node root, char[] template,
+  public static String execute(Node root, char[] template,
                                TemplateOutputStream appender, Object context,
                                VariableResolverFactory factory, TemplateRegistry registry, String baseDir) {
 
@@ -277,12 +278,21 @@ public class TemplateRuntime {
   }
 
 
-  public Object execute(StringAppender appender, Object context, VariableResolverFactory factory) {
+  public String execute(StringAppender appender, Object context, VariableResolverFactory factory) {
     return execute(new StringAppenderStream(appender), context, factory);
   }
 
-  public Object execute(TemplateOutputStream stream, Object context, VariableResolverFactory factory) {
-    return rootNode.eval(this, stream, context, factory);
+  public String execute(TemplateOutputStream stream, Object context, VariableResolverFactory factory) {
+    execute(rootNode, stream, context, factory);
+    return stream.toString();
+  }
+
+  public void execute(Node startNode, TemplateOutputStream stream, Object context, VariableResolverFactory factory) {
+    Node node = startNode;
+    while (node != null) {
+      node.eval(this, stream, context, factory);
+      node = node.getNextExecutableNode(context, factory);
+    }
   }
 
   public Node getRootNode() {
@@ -315,5 +325,9 @@ public class TemplateRuntime {
       relPath.push(baseDir);
     }
     return relPath;
+  }
+
+  public ExecutableValuePostProcessor getPostProcessor() {
+    return postProcessor;
   }
 }

@@ -49,9 +49,8 @@ public class CodeNode extends Node {
     this.offset = end - start - 1;
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
     MVEL.eval(contents, start, offset, ctx, factory);
-    return next != null ? next.eval(runtime, appender, ctx, factory) : null;
   }
 
   public boolean demarcate(Node terminatingNode, char[] template) {

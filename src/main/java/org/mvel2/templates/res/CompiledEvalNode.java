@@ -41,9 +41,8 @@ public class CompiledEvalNode extends Node {
     ce = MVEL.compileExpression(template, cStart, cEnd - cStart, context);
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
-    appender.append(String.valueOf(TemplateRuntime.eval(valueOf(MVEL.executeExpression(ce, ctx, factory)), ctx, factory)));
-    return next != null ? next.eval(runtime, appender, ctx, factory) : null;
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+    appender.append(runtime.getPostProcessor().process(TemplateRuntime.eval(valueOf(MVEL.executeExpression(ce, ctx, factory)), ctx, factory)));
   }
 
   public boolean demarcate(Node terminatingNode, char[] template) {

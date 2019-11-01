@@ -76,7 +76,7 @@ public class CompiledForEachNode extends Node {
     return false;
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
     Iterator[] iters = new Iterator[item.length];
 
     Object o;
@@ -111,12 +111,12 @@ public class CompiledForEachNode extends Node {
         }
       }
       if (iterate != 0) {
-        nestedNode.eval(runtime, appender, ctx, localFactory);
+        runtime.execute(nestedNode, appender, context, localFactory);
 
         if (sepExpr != null) {
           for (Iterator it : iters) {
             if (it.hasNext()) {
-              appender.append(String.valueOf(MVEL.executeExpression(cSepExpr, ctx, factory)));
+              appender.append(runtime.getPostProcessor().process(MVEL.executeExpression(cSepExpr, ctx, factory)));
               break;
             }
           }
@@ -124,8 +124,6 @@ public class CompiledForEachNode extends Node {
       }
       else break;
     }
-
-    return next != null ? next.eval(runtime, appender, ctx, factory) : null;
   }
 
   private void configure() {
