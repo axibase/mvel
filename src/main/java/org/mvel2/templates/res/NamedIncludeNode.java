@@ -55,22 +55,13 @@ public class NamedIncludeNode extends Node {
 //        if (mark != contents.length) this.preExpression = subset(contents, ++mark, contents.length - mark);
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
     if (preOffset != 0) {
       MVEL.eval(contents, preStart, preOffset, ctx, factory);
     }
-
-    if (next != null) {
-      return next.eval(runtime,
-          appender.append(String.valueOf(TemplateRuntime.execute(runtime
-              .getNamedTemplateRegistry().getNamedTemplate(MVEL.eval(contents, includeStart, includeOffset,
-                  ctx, factory, String.class)), ctx, factory))), ctx, factory);
-    }
-    else {
-      return appender.append(String.valueOf(TemplateRuntime.execute(runtime.getNamedTemplateRegistry()
-          .getNamedTemplate(MVEL.eval(contents, includeStart, includeOffset, ctx, factory, String.class)),
-          ctx, factory)));
-    }
+    appender.append(runtime.getPostProcessor().process(TemplateRuntime.execute(runtime.getNamedTemplateRegistry()
+                    .getNamedTemplate(MVEL.eval(contents, includeStart, includeOffset, ctx, factory, String.class)),
+            ctx, factory)));
   }
 
   public boolean demarcate(Node terminatingNode, char[] template) {

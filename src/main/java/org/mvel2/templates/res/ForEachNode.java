@@ -64,7 +64,7 @@ public class ForEachNode extends Node {
     return false;
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
     Iterator[] iters = new Iterator[item.length];
 
     Object o;
@@ -101,7 +101,7 @@ public class ForEachNode extends Node {
         if (sepExpr != null) {
           for (Iterator it : iters) {
             if (it.hasNext()) {
-              appender.append(String.valueOf(MVEL.eval(sepExpr, ctx, factory)));
+              appender.append(runtime.getPostProcessor().process(MVEL.eval(sepExpr, ctx, factory)));
               break;
             }
           }
@@ -109,8 +109,6 @@ public class ForEachNode extends Node {
       }
       else break;
     }
-
-    return next != null ? next.eval(runtime, appender, ctx, factory) : null;
   }
 
   private void configure() {

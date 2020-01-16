@@ -46,9 +46,8 @@ public class CompiledCodeNode extends Node {
 //                   context);
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
     MVEL.executeExpression(ce, ctx, factory);
-    return next != null ? next.eval(runtime, appender, ctx, factory) : null;
   }
 
   public boolean demarcate(Node terminatingNode, char[] template) {

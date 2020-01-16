@@ -23,7 +23,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.mvel2.templates.TemplateCompiler.compileTemplate;
 
@@ -76,7 +82,7 @@ public class TemplateTests extends TestCase {
                 });
     }
 
-    public Object test(String template) {
+    public String test(String template) {
         CompiledTemplate compiled = compileTemplate(template);
         return TemplateRuntime.execute(compiled, base, vrf);
     }
@@ -204,7 +210,7 @@ public class TemplateTests extends TestCase {
     public void testExpressions() {
         String s = "@{_foo_.length()}";
         Object r = test(s);
-        assertEquals(3, r);
+        assertEquals("3", r);
     }
 
     public void testCode() {
@@ -254,19 +260,19 @@ public class TemplateTests extends TestCase {
     }
 
     public void testBooleanOperator() {
-        assertEquals(true, test("@{foo.bar.woof == true}"));
+        assertEquals("true", test("@{foo.bar.woof == true}"));
     }
 
     public void testBooleanOperator2() {
-        assertEquals(false, test("@{foo.bar.woof == false}"));
+        assertEquals("false", test("@{foo.bar.woof == false}"));
     }
 
     public void testTextComparison() {
-        assertEquals(true, test("@{foo.bar.name == 'dog'}"));
+        assertEquals("true", test("@{foo.bar.name == 'dog'}"));
     }
 
     public void testNETextComparison() {
-        assertEquals(true, test("@{foo.bar.name != 'foo'}"));
+        assertEquals("true", test("@{foo.bar.name != 'foo'}"));
     }
 
     public void testChor() {
@@ -278,15 +284,15 @@ public class TemplateTests extends TestCase {
     }
 
     public void testNullCompare() {
-        assertEquals(true, test("@{c != null}"));
+        assertEquals("true", test("@{c != null}"));
     }
 
     public void testAnd() {
-        assertEquals(true, test("@{c != null && foo.bar.name == 'dog' && foo.bar.woof}"));
+        assertEquals("true", test("@{c != null && foo.bar.name == 'dog' && foo.bar.woof}"));
     }
 
     public void testMath() {
-        assertEquals(188.4, test("@{pi * hour}"));
+        assertEquals("188.4", test("@{pi * hour}"));
     }
 
     public void testTemplating() {
@@ -294,19 +300,19 @@ public class TemplateTests extends TestCase {
     }
 
     public void testComplexAnd() {
-        assertEquals(true, test("@{(pi * hour) > 0 && foo.happy() == 'happyBar'}"));
+        assertEquals("true", test("@{(pi * hour) > 0 && foo.happy() == 'happyBar'}"));
     }
 
     public void testModulus() {
-        assertEquals(38392 % 2,
+        assertEquals("" + (38392 % 2),
                 test("@{38392 % 2}"));
     }
 
     public void testLessThan() {
-        assertEquals(true, test("@{pi < 3.15}"));
-        assertEquals(true, test("@{pi <= 3.14}"));
-        assertEquals(false, test("@{pi > 3.14}"));
-        assertEquals(true, test("@{pi >= 3.14}"));
+        assertEquals("true", test("@{pi < 3.15}"));
+        assertEquals("true", test("@{pi <= 3.14}"));
+        assertEquals("false", test("@{pi > 3.14}"));
+        assertEquals("true", test("@{pi >= 3.14}"));
     }
 
     public void testMethodAccess() {
@@ -318,11 +324,11 @@ public class TemplateTests extends TestCase {
     }
 
     public void testMethodAccess3() {
-        assertEquals(true, test("@{equalityCheck(c, 'cat')}"));
+        assertEquals("true", test("@{equalityCheck(c, 'cat')}"));
     }
 
     public void testMethodAccess4() {
-        assertEquals(null, test("@{readBack(null)}"));
+        assertEquals("null", test("@{readBack(null)}"));
     }
 
     public void testMethodAccess5() {
@@ -330,27 +336,27 @@ public class TemplateTests extends TestCase {
     }
 
     public void testMethodAccess6() {
-        assertEquals(false, test("@{!foo.bar.isWoof()}"));
+        assertEquals("false", test("@{!foo.bar.isWoof()}"));
     }
 
     public void testNegation() {
-        assertEquals(true, test("@{!fun && !fun}"));
+        assertEquals("true", test("@{!fun && !fun}"));
     }
 
     public void testNegation2() {
-        assertEquals(false, test("@{fun && !fun}"));
+        assertEquals("false", test("@{fun && !fun}"));
     }
 
     public void testNegation3() {
-        assertEquals(true, test("@{!(fun && fun)}"));
+        assertEquals("true", test("@{!(fun && fun)}"));
     }
 
     public void testNegation4() {
-        assertEquals(false, test("@{(fun && fun)}"));
+        assertEquals("false", test("@{(fun && fun)}"));
     }
 
     public void testMultiStatement() {
-        assertEquals(true, test("@{populate(); barfoo == 'sarah'}"));
+        assertEquals("true", test("@{populate(); barfoo == 'sarah'}"));
     }
 
     public void testAssignment2() {
@@ -358,19 +364,19 @@ public class TemplateTests extends TestCase {
     }
 
     public void testOr() {
-        assertEquals(true, test("@{fun || true}"));
+        assertEquals("true", test("@{fun || true}"));
     }
 
     public void testLiteralPassThrough() {
-        assertEquals(true, test("@{true}"));
+        assertEquals("true", test("@{true}"));
     }
 
     public void testLiteralPassThrough2() {
-        assertEquals(false, test("@{false}"));
+        assertEquals("false", test("@{false}"));
     }
 
     public void testLiteralPassThrough3() {
-        assertEquals(null, test("@{null}"));
+        assertEquals("null", test("@{null}"));
     }
 
     public void testControlLoopList() {
@@ -445,23 +451,23 @@ public class TemplateTests extends TestCase {
     }
 
     public void testRegEx() {
-        assertEquals(true, test("@{foo.bar.name ~= '[a-z].+'}"));
+        assertEquals("true", test("@{foo.bar.name ~= '[a-z].+'}"));
     }
 
     public void testRegExNegate() {
-        assertEquals(false, test("@{!(foo.bar.name ~= '[a-z].+')}"));
+        assertEquals("false", test("@{!(foo.bar.name ~= '[a-z].+')}"));
     }
 
     public void testRegEx2() {
-        assertEquals(true, test("@{foo.bar.name ~= '[a-z].+' && foo.bar.name != null}"));
+        assertEquals("true", test("@{foo.bar.name ~= '[a-z].+' && foo.bar.name != null}"));
     }
 
     public void testBlank() {
-        assertEquals(true, test("@{'' == empty}"));
+        assertEquals("true", test("@{'' == empty}"));
     }
 
     public void testBlank2() {
-        assertEquals(true, test("@{BWAH == empty}"));
+        assertEquals("true", test("@{BWAH == empty}"));
     }
 
     public void testTernary() {
@@ -489,71 +495,71 @@ public class TemplateTests extends TestCase {
     }
 
     public void testInstanceCheck1() {
-        assertEquals(true, test("@{c is java.lang.String}"));
+        assertEquals("true", test("@{c is java.lang.String}"));
     }
 
     public void testInstanceCheck2() {
-        assertEquals(false, test("@{pi is java.lang.Integer}"));
+        assertEquals("false", test("@{pi is java.lang.Integer}"));
     }
 
     public void testBitwiseOr1() {
-        assertEquals(6, test("@{2 | 4}"));
+        assertEquals("6", test("@{2 | 4}"));
     }
 
     public void testBitwiseOr2() {
-        assertEquals(true, test("@{(2 | 1) > 0}"));
+        assertEquals("true", test("@{(2 | 1) > 0}"));
     }
 
     public void testBitwiseOr3() {
-        assertEquals(true, test("@{(2 | 1) == 3}"));
+        assertEquals("true", test("@{(2 | 1) == 3}"));
     }
 
     public void testBitwiseAnd1() {
-        assertEquals(2, test("@{2 & 3}"));
+        assertEquals("2", test("@{2 & 3}"));
     }
 
     public void testShiftLeft() {
-        assertEquals(4, test("@{2 << 1}"));
+        assertEquals("4", test("@{2 << 1}"));
     }
 
     public void testUnsignedShiftLeft() {
-        assertEquals(2, test("@{-2 <<< 0}"));
+        assertEquals("2", test("@{-2 <<< 0}"));
     }
 
     public void testShiftRight() {
-        assertEquals(128, test("@{256 >> 1}"));
+        assertEquals("128", test("@{256 >> 1}"));
     }
 
     public void testXOR() {
-        assertEquals(3, test("@{1 ^ 2}"));
+        assertEquals("3", test("@{1 ^ 2}"));
     }
 
     public void testContains1() {
-        assertEquals(true, test("@{list contains 'Happy!'}"));
+        assertEquals("true", test("@{list contains 'Happy!'}"));
     }
 
     public void testContains2() {
-        assertEquals(false, test("@{list contains 'Foobie'}"));
+        assertEquals("false", test("@{list contains 'Foobie'}"));
     }
 
     public void testContains3() {
-        assertEquals(true, test("@{sentence contains 'fox'}"));
+        assertEquals("true", test("@{sentence contains 'fox'}"));
     }
 
     public void testContains4() {
-        assertEquals(false, test("@{sentence contains 'mike'}"));
+        assertEquals("false", test("@{sentence contains 'mike'}"));
     }
 
     public void testContains5() {
-        assertEquals(true, test("@{!(sentence contains 'mike')}"));
+        assertEquals("true", test("@{!(sentence contains 'mike')}"));
     }
 
     public void testTokenMethodAccess() {
-        assertEquals(String.class, test("@{a = 'foo'; a.getClass()}"));
+        assertEquals("String", test("@{a = 'foo'; a.getClass().getSimpleName()}"));
     }
 
     public void testArrayCreationWithLength() {
-        assertEquals(2, test("@{Array.getLength({'foo', 'bar'})}"));
+        assertEquals("2", test("@{Array.getLength({'foo', 'bar'})}"));
     }
 
     public void testMapCreation() {
@@ -561,11 +567,11 @@ public class TemplateTests extends TestCase {
     }
 
     public void testProjectionSupport() {
-        assertEquals(true, test("@{(name in things) contains 'Bob'}"));
+        assertEquals("true", test("@{(name in things) contains 'Bob'}"));
     }
 
     public void testProjectionSupport2() {
-        assertEquals(3, test("@{(name in things).size()}"));
+        assertEquals("3", test("@{(name in things).size()}"));
     }
 
     public void testObjectInstantiation() {
@@ -593,15 +599,11 @@ public class TemplateTests extends TestCase {
     }
 
     public void testSoundex() {
-        assertTrue((Boolean) test("@{'foobar' soundslike 'fubar'}"));
+        assertEquals("true", test("@{'foobar' soundslike 'fubar'}"));
     }
 
     public void testSoundex2() {
-        assertFalse((Boolean) test("@{'flexbar' soundslike 'fubar'}"));
-    }
-
-    public void testThisReference() {
-        assertEquals(true, test("@{this}") instanceof Base);
+        assertEquals("false", test("@{'flexbar' soundslike 'fubar'}"));
     }
 
     public void testIfLoopInTemplate() {
@@ -637,7 +639,7 @@ public class TemplateTests extends TestCase {
         String template = "@foreach{item : list}a@end{}";
         Map map = new HashMap();
         map.put("list", list);
-        String r = (String) TemplateRuntime.eval(template, map);
+        String r = TemplateRuntime.eval(template, map);
         System.out.println("r: " + r);
         assertEquals("aaa", r);
     }
@@ -646,7 +648,7 @@ public class TemplateTests extends TestCase {
         Folder f1 = new Folder("f1", null);
 
         String template = "@{name} @foreach{item : children}a@end{}";
-        String r = (String) TemplateRuntime.eval(template, f1);
+        String r = TemplateRuntime.eval(template, f1);
         System.out.println("r: " + r);
     }
 
@@ -657,7 +659,7 @@ public class TemplateTests extends TestCase {
         String template = "@foreach{item : list}a@end{}";
         Map map = new HashMap();
         map.put("list", list);
-        String r = (String) TemplateRuntime.eval(template, map);
+        String r = TemplateRuntime.eval(template, map);
         System.out.println("r: " + r);
         assertEquals("aaa", r);
     }
@@ -991,14 +993,24 @@ public class TemplateTests extends TestCase {
         Map<String, Object> context = new HashMap<String, Object>();
         context.put( "root", new Node( 2,
                                        Arrays.asList( new Node( 1,
-                                                                Collections.EMPTY_LIST ) ) ) );
+                                                                Collections.<Node>emptyList() ) ) ) );
 
 
-        String result = (String) TemplateRuntime.execute( reportRegistry.getNamedTemplate( "drl" ),
+        String result = TemplateRuntime.execute( reportRegistry.getNamedTemplate( "drl" ),
                                                           null,
                                                           new MapVariableResolverFactory( context ),
                                                           reportRegistry );
 
         assertEquals("OR AND AND OR", result);
+    }
+
+    public void testStackOverflow() {
+        StringBuilder templateBuilder = new StringBuilder();
+        for (int i = 1; i < 5000; i++) {
+            templateBuilder.append("Line ").append(i).append(" value: ${value}\n");
+        }
+        final String template = templateBuilder.toString();
+        final Object result = TemplateRuntime.eval(template, Collections.singletonMap("value", "Test Value"));
+        assertEquals(template.replace("${value}", "Test Value"), result);
     }
 }

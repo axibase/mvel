@@ -34,12 +34,11 @@ public class TextNode extends Node {
     this.next = next;
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
     int len = end - begin;
     if (len != 0) {
       appender.append(new String(runtime.getTemplate(), begin, len));
     }
-    return next != null ? next.eval(runtime, appender, ctx, factory) : null;
   }
 
   public String toString() {

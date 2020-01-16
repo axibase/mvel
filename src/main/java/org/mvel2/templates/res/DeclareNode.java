@@ -38,7 +38,7 @@ public class DeclareNode extends Node {
     //    this.contents = subset(template, this.cStart = start, (this.end = this.cEnd = end) - start - 1);
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
     if (runtime.getNamedTemplateRegistry() == null) {
       runtime.setNamedTemplateRegistry(new SimpleTemplateRegistry());
     }
@@ -46,8 +46,6 @@ public class DeclareNode extends Node {
     runtime.getNamedTemplateRegistry()
         .addNamedTemplate(MVEL.eval(contents, cStart, cEnd - cStart, ctx, factory, String.class),
             new CompiledTemplate(runtime.getTemplate(), nestedNode));
-
-    return next != null ? next.eval(runtime, appender, ctx, factory) : null;
   }
 
   public boolean demarcate(Node terminatingNode, char[] template) {

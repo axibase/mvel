@@ -23,8 +23,8 @@ import org.mvel2.templates.TemplateRuntime;
 import org.mvel2.templates.util.TemplateOutputStream;
 
 public class EndNode extends Node {
-  public Object eval(TemplateRuntime runtie, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
-    return appender.toString();
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+     // do nothing
   }
 
   public String toString() {

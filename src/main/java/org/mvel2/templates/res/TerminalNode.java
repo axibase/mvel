@@ -31,8 +31,8 @@ public class TerminalNode extends Node {
     this.end = end;
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
-    return next != null ? next.eval(runtime, appender, ctx, factory) : null;
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+    // do nothing
   }
 
   public boolean demarcate(Node terminatingNode, char[] template) {

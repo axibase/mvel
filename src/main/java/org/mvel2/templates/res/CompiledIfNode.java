@@ -39,10 +39,15 @@ public class CompiledIfNode extends IfNode {
     }
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+  @Override
+  public Node getNextExecutableNode(Object ctx, VariableResolverFactory factory) {
     if (ce == null || MVEL.executeExpression(ce, ctx, factory, Boolean.class)) {
-      return trueNode.eval(runtime, appender, ctx, factory);
+      return trueNode;
     }
-    return next != null ? next.eval(runtime, appender, ctx, factory) : null;
+    return next;
+  }
+
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+    // do nothing
   }
 }

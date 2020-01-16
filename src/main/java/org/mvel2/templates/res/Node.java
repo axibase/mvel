@@ -60,7 +60,7 @@ public abstract class Node implements Serializable {
     this.next = next;
   }
 
-  public abstract Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory);
+  public abstract void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory);
 
   public String getName() {
     return name;
@@ -138,5 +138,9 @@ public abstract class Node implements Serializable {
 
   public int getLength() {
     return this.end - this.begin;
+  }
+
+  public Node getNextExecutableNode(Object ctx, VariableResolverFactory factory) {
+    return this.next;
   }
 }

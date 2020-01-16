@@ -35,8 +35,8 @@ public class CompiledTerminalExpressionNode extends TerminalExpressionNode {
     ce = MVEL.compileExpression(node.contents, node.cStart, node.cEnd - node.cStart, context);
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
-    return MVEL.executeExpression(ce, ctx, factory);
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+      appender.append(runtime.getPostProcessor().process(MVEL.executeExpression(ce, ctx, factory)));
   }
 
   public boolean demarcate(Node terminatingNode, char[] template) {

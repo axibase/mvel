@@ -35,8 +35,8 @@ public class TerminalExpressionNode extends Node {
     this.cEnd = node.cEnd;
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
-    return MVEL.eval(contents, cStart, cEnd - cStart, ctx, factory);
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+     appender.append(runtime.getPostProcessor().process(MVEL.eval(contents, cStart, cEnd - cStart, ctx, factory)));
   }
 
   public boolean demarcate(Node terminatingNode, char[] template) {

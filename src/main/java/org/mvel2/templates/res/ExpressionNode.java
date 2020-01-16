@@ -23,8 +23,6 @@ import org.mvel2.integration.VariableResolverFactory;
 import org.mvel2.templates.TemplateRuntime;
 import org.mvel2.templates.util.TemplateOutputStream;
 
-import static java.lang.String.valueOf;
-
 public class ExpressionNode extends Node {
   public ExpressionNode() {
   }
@@ -50,9 +48,8 @@ public class ExpressionNode extends Node {
     this.next = next;
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
-    appender.append(valueOf(MVEL.eval(contents, cStart, cEnd - cStart, ctx, factory)));
-    return next != null ? next.eval(runtime, appender, ctx, factory) : null;
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+    appender.append(runtime.getPostProcessor().process(MVEL.eval(contents, cStart, cEnd - cStart, ctx, factory)));
   }
 
   public boolean demarcate(Node terminatingNode, char[] template) {

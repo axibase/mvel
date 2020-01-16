@@ -57,19 +57,16 @@ public class IncludeNode extends Node {
 //        if (mark != contents.length) this.preExpression = subset(contents, ++mark, contents.length - mark);
   }
 
-  public Object eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
+  public void eval(TemplateRuntime runtime, TemplateOutputStream appender, Object ctx, VariableResolverFactory factory) {
     String file = MVEL.eval(contents, includeStart, includeOffset, ctx, factory, String.class);
 
     if (preOffset != 0) {
       MVEL.eval(contents, preStart, preOffset, ctx, factory);
     }
-
-    if (next != null) {
-      return next.eval(runtime, appender.append(String.valueOf(TemplateRuntime.eval(readInFile(runtime, file), ctx, factory))), ctx, factory);
-    }
-    else {
-      return appender.append(String.valueOf(MVEL.eval(readInFile(runtime, file), ctx, factory)));
-    }
+    final Object value = next != null ?
+            TemplateRuntime.eval(readInFile(runtime, file), ctx, factory) :
+            MVEL.eval(readInFile(runtime, file), ctx, factory);
+    appender.append(runtime.getPostProcessor().process(value));
   }
 
   public boolean demarcate(Node terminatingNode, char[] template) {

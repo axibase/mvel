@@ -20,7 +20,6 @@ package org.mvel2.util;
 
 import org.mvel2.ScriptRuntimeException;
 
-import static java.lang.String.valueOf;
 import static org.mvel2.math.MathProcessor.doOperations;
 
 public class ExecutionStack {
@@ -220,7 +219,7 @@ public class ExecutionStack {
 
     StringBuilder appender = new StringBuilder().append("[");
     do {
-      appender.append(valueOf(el.value));
+      appender.append(el.value);
       if (el.next != null) appender.append(", ");
     }
     while ((el = el.next) != null);
