@@ -48,8 +48,8 @@ import static org.mvel2.util.ParseTools.optimizeTree;
  */
 public class MVEL {
   public static final String NAME = "MVEL (MVFLEX Expression Language)";
-  public static final String VERSION = "2.4";
-  public static final String VERSION_SUB = "5";
+  public static final String VERSION = "3.0";
+  public static final String VERSION_SUB = "0";
   public static final String CODENAME = "liberty";
   static boolean DEBUG_FILE = getBoolean("mvel2.debug.fileoutput");
   static String ADVANCED_DEBUGGING_FILE = System.getProperty("mvel2.debugging.file") == null ? "mvel_debug.txt" : System.getProperty("mvel2.debugging.file");
