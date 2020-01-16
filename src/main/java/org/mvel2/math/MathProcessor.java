@@ -310,6 +310,8 @@ public strictfp class MathProcessor {
       case DIV:
       case MULT:
       case MOD:
+        final String operatorSymbol = DebugTools.getOperatorSymbol(operation);
+        throw new RuntimeException("unsupported operation '" + operatorSymbol + "' on values '" + val1 + "' and '" + val2 + "'");
       case GTHAN:
         if (val1 instanceof Comparable) {
           try {
