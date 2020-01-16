@@ -1071,4 +1071,17 @@ public class ArithmeticTests extends AbstractTest {
     Object result = MVEL.executeExpression(expr, new HashMap<String, Object>());
     assertEquals(new BigDecimal(2), result);
   }
+
+  public void testArithmeticOperatorsOnObjectsFail() {
+    String[] expressions = {"'a' % []", "'a' - []", "'a' / []", "'a' * []"};
+    for (String expression : expressions) {
+      try {
+        Serializable compiled = MVEL.compileExpression(expression);
+        MVEL.executeExpression(compiled);
+        fail("Must have failed with unsupported operation exception");
+      } catch (RuntimeException e) {
+        assertTrue("Exception message doesn't contain valid explanation", e.getMessage().contains("unsupported operation"));
+      }
+    }
+  }
 }
