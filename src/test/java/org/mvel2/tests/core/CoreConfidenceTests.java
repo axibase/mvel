@@ -3418,6 +3418,35 @@ public class CoreConfidenceTests extends AbstractTest {
     assertTrue(result);
   }
 
+  public void testMapAccessWithNestedPropertyRepeated() {
+    /*
+     * 181 - Nested property access successful in ReflectiveAccessorOptimizer
+     *   but fails in ASMAccessorOptimizer
+     */
+    String str = "map[key] == \"one\"";
+
+    ParserConfiguration pconf = new ParserConfiguration();
+    ParserContext pctx = new ParserContext(pconf);
+    pctx.setStrongTyping(true);
+    pctx.addInput("this", POJO.class);
+    ExecutableStatement stmt = (ExecutableStatement) MVEL.compileExpression(str, pctx);
+
+    POJO ctx = new POJO();
+    ctx.getMap().put("1", "one");
+    for (int i = 0; i < 500; ++i) {
+      try {
+        Boolean result = (Boolean) MVEL.executeExpression(stmt, ctx);
+        assertTrue(result);
+      }
+      catch (RuntimeException ex) {
+        if (i == 0) {
+          throw ex;
+        }
+        throw new IllegalStateException("Expression failed at iteration " + i, ex);
+      }
+    }
+  }
+
   public void testArrays() {
     String str = "Object[] a = new Object[3]; a[0] = \"a\"; a[1] = \"b\"; a[2] = \"c\"; System.out.println(java.util.Arrays.toString(a));";
     ParserConfiguration pconf = new ParserConfiguration();
@@ -3872,6 +3901,10 @@ public class CoreConfidenceTests extends AbstractTest {
   public void testExpressionReturnTypeWithGenerics() {
     assertEquals(String.class, expressionReturnType("Field1Option.get"));
     assertEquals(String.class, expressionReturnType("Field1Option.t"));
+  }
+
+  public void testModuloReturnType() {
+    assertEquals(Integer.class, expressionReturnType("3 % 2"));
   }
 
   public void testWrongExpressions() {
@@ -4653,7 +4686,7 @@ public class CoreConfidenceTests extends AbstractTest {
     expressionCompiler.compile();
     assertEquals(String.class, expressionCompiler.getReturnType());
   }
-  
+
   @Test
   public void testVariableMapWithoutNullKeySupportWhenMethodUsed() {
     final String expr = "var t = identity('test')";
@@ -4790,5 +4823,23 @@ public class CoreConfidenceTests extends AbstractTest {
     String expression = "undeclared(v1, v2).toString()";
     MVEL.compileExpression(expression, parserContext);
     assertEquals(Collections.singleton("undeclared"), parserContext.getPossiblyUndeclaredFunctions());
+  }
+
+  @Test
+  public void test_BigDecimal_ASMoptimizerSupport() {
+    /* https://github.com/mvel/mvel/issues/89
+     * The following case failed in attempt from the ASM optimizer to
+     *  create a numeric constant from the value 30000B.
+     */
+    Serializable compiled = MVEL.compileExpression("big = new java.math.BigDecimal(\"10000\"); if (big.compareTo(30000B) > 0) then ;");
+    Map<String, Integer> vars = new HashMap<String, Integer>();
+    for (int i = 0; i < 1000; i++) {
+      try {
+        MVEL.executeExpression(compiled, vars);
+      } catch (CompileException e) {
+        e.printStackTrace();
+        fail("Failed after #executions: " + i);
+      }
+    }
   }
 }

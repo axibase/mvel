@@ -1117,9 +1117,16 @@ public class ASMAccessorOptimizer extends AbstractOptimizer implements AccessorO
 
         returnType = ((Method) member).getReturnType();
 
-        assert debug("INVOKEVIRTUAL " + member.getName() + ":" + returnType);
-        mv.visitMethodInsn(INVOKEVIRTUAL, getInternalName(member.getDeclaringClass()), member.getName(),
+        if (member.getDeclaringClass().isInterface()) {
+          assert debug("INVOKEINTERFACE " + member.getName() + ":" + returnType);
+          mv.visitMethodInsn(INVOKEINTERFACE, getInternalName(member.getDeclaringClass()), member.getName(),
+              getMethodDescriptor((Method) member));
+        }
+        else {
+          assert debug("INVOKEVIRTUAL " + member.getName() + ":" + returnType);
+          mv.visitMethodInsn(INVOKEVIRTUAL, getInternalName(member.getDeclaringClass()), member.getName(),
             getMethodDescriptor((Method) member));
+        }
       }
       catch (IllegalAccessException e) {
         Method iFaceMeth = determineActualTargetMethod((Method) member);
@@ -1395,7 +1402,7 @@ private Object optimizeFieldMethodProperty(Object ctx, String property, Class<?>
     }
 
     ExecutableStatement compiled = (ExecutableStatement) subCompileExpression(tk.toCharArray(), pCtx);
-    Object item = compiled.getValue(ctx, variableFactory);
+    Object item = compiled.getValue(this.ctx, variableFactory);
 
     ++cursor;
 
@@ -2638,14 +2645,6 @@ private Object optimizeFieldMethodProperty(Object ctx, String property, Class<?>
 
 
   private Object addSubstatement(ExecutableStatement stmt) {
-    if (stmt instanceof ExecutableAccessor) {
-      ExecutableAccessor ea = (ExecutableAccessor) stmt;
-      if (ea.getNode().isIdentifier() && !ea.getNode().isDeepProperty()) {
-        loadVariableByName(ea.getNode().getName());
-        return null;
-      }
-    }
-
     compiledInputs.add(stmt);
 
     assert debug("ALOAD 0");
