@@ -21,7 +21,7 @@ package org.mvel2.integration;
 import java.io.Serializable;
 
 /**
- * A variable resolver is responsible for physically accessing a variable, for either read or write.  VariableResolver's
+ * A variable resolver is responsible for physically accessing a variable, for either read or write.  VariableResolvers
  * are obtained via a {@link org.mvel2.integration.VariableResolverFactory}.
  */
 public interface VariableResolver extends Serializable {
@@ -33,7 +33,7 @@ public interface VariableResolver extends Serializable {
   public String getName();
 
   /**
-   * This should return the type of the variable.  However, this is not completely necessary, and is particularily
+   * This should return the type of the variable.  However, this is not completely necessary, and is particularly
    * only of benefit to systems that require use of MVEL's strict typing facilities.  In most cases, this implementation
    * can simply return: Object.class
    *
@@ -48,7 +48,7 @@ public interface VariableResolver extends Serializable {
 
   /**
    * Returns the bitset of special variable flags.  Internal use only.  This should just return 0 in custom
-   * implentations.
+   * implementations.
    *
    * @return Bitset of special flags.
    */
