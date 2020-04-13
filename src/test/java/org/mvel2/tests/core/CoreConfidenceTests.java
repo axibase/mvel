@@ -4616,6 +4616,32 @@ public class CoreConfidenceTests extends AbstractTest {
     }
   }
 
+  public void testIndexArrayOutOfBoundsExceptionInToString() {
+    String s1 = "function func(p) {\n" +
+            "  String r = 'result: ';\n" +
+            "  r += firstArg('', asString(p));" +
+            "  return r;\n" +
+            "}\n" +
+            "function firstArg(a, b) {\n" +
+            "  return a;\n" +
+            "}" +
+            "function asString(p) {\n" +
+            "  return p.arg != null ? arg : ''" +
+            "}\n" +
+            "func(['arg1': '42', 'arg2': '']);";
+    try {
+      Serializable serializable = MVEL.compileExpression(s1);
+      executeExpression(serializable, new AbstractTest.Context(), new HashMap());
+      fail("Must have thrown exception");
+    } catch (Exception e) {
+      String expectedError = "[Error: could not access: arg; in class: org.mvel2.tests.core.AbstractTest$Context]\n" +
+              "[Near : {... return p.arg != null ? arg : ''} ....}]\n" +
+              "                    ^\n" +
+              "[Line: 8, Column: 10]";
+      assertEquals(expectedError, e.getMessage());
+    }
+  }
+
   public void testHandleNumericConversionBug() {
     String[] testLiterals = {"0x20","020",};
     String baseExpression = "int foo = ";

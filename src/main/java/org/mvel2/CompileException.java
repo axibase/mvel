@@ -151,7 +151,7 @@ public class CompileException extends RuntimeException {
       }
 
       matchOffset = cursor - matchStart;
-
+      matchStart = Math.max(matchStart, 0);
       match = new String(expr, matchStart, expr.length - matchStart);
       Makematch:
       for (int i = 0; i < match.length(); i++) {
