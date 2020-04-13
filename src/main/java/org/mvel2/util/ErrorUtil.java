@@ -12,6 +12,10 @@ import java.util.logging.Logger;
 public class ErrorUtil {
   private static final Logger LOG = Logger.getLogger(ErrorUtil.class.getName());
 
+  private static String createSubstring(char[] arr, int index) {
+    return new String(arr, index, arr.length - index);
+  }
+
   public static CompileException rewriteIfNeeded(CompileException caught, char[] outer, int outerCursor) {
     if (outer != caught.getExpr()) {
       if (caught.getExpr().length <= caught.getCursor()) {
@@ -19,15 +23,14 @@ public class ErrorUtil {
       }
 
       try {
-      String innerExpr = new String(caught.getExpr()).substring(caught.getCursor());
-      caught.setExpr(outer);
+        String innerExpr = createSubstring(caught.getExpr(), caught.getCursor());
+        String outerStr = new String(outer);
 
-      String outerStr = new String(outer);
-
-      int newCursor = outerStr.substring(outerStr.indexOf(new String(caught.getExpr())))
-          .indexOf(innerExpr);
-
-      caught.setCursor(newCursor);
+        int newCursor = outerStr.indexOf(innerExpr);
+        if (newCursor != -1) {
+          caught.setCursor(newCursor);
+          caught.setExpr(outer);
+        }
       }
       catch (Throwable t) {
         LOG.log(Level.WARNING, "", t);
