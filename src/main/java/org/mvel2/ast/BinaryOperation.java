@@ -141,10 +141,15 @@ public class BinaryOperation extends BooleanNode {
   }
 
   private boolean areCompatible(Class<?> leftClass, Class<?> rightClass) {
-    return leftClass.equals(NullType.class) || rightClass.equals(NullType.class) ||
-           ( Number.class.isAssignableFrom(rightClass) && Number.class.isAssignableFrom(leftClass) ) ||
+    if (leftClass.equals(NullType.class) || rightClass.equals(NullType.class)) {
+      return true;
+    }
+    Class<?> boxedLeftClass = boxPrimitive(leftClass);
+    Class<?> boxedRightClass = boxPrimitive(rightClass);
+    return
+           ( Number.class.isAssignableFrom(boxedRightClass) && Number.class.isAssignableFrom(boxedLeftClass) ) ||
            ( (rightClass.isPrimitive() || leftClass.isPrimitive()) &&
-             canConvert(boxPrimitive(leftClass), boxPrimitive(rightClass)) );
+             canConvert(boxedLeftClass, boxedRightClass));
   }
 
   public Object getReducedValueAccelerated(Object ctx, Object thisValue, VariableResolverFactory factory) {

@@ -24,6 +24,7 @@ import org.mvel2.util.MethodStub;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1606,4 +1607,18 @@ public class TypesAndInferenceTests extends AbstractTest {
     Class resultType =  analyze(str, pctx);
     assertEquals(java.util.Optional.class, resultType);
   }
+
+  public void testPrimitiveDoubleAndNumberDivision() {
+    ParserContext parserContext = ParserContext.create().stronglyTyped()
+            .withInput("a", double.class)
+            .withInput("number", Number.class);
+    final Map<String, Object> vars = new HashMap<String, Object>();
+    vars.put("a", "5");
+    vars.put("number", BigDecimal.TEN);
+    final Object doubleDividesNumber = executeExpression(compileExpression("a / number", parserContext), vars);
+    assertNumEquals(0.5, doubleDividesNumber);
+    final Object numberDividesDouble = executeExpression(compileExpression("number / a", parserContext), vars);
+    assertNumEquals(2.0, numberDividesDouble);
+  }
+
 }
