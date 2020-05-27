@@ -205,6 +205,7 @@ public class MVEL {
    *
    * @param expression A string containing the expression to be evaluated.
    * @param toType     The target type that the resultant value will be converted to, if necessary.
+   * @param <T> type
    * @return The resultant value.
    */
   public static <T> T eval(String expression, Class<T> toType) {
@@ -218,6 +219,7 @@ public class MVEL {
    * @param expression A string containing the expression to be evaluated.
    * @param ctx        The context object to evaluate against.
    * @param toType     The target type that the resultant value will be converted to, if necessary.
+   * @param <T> type
    * @return The resultant value
    * @see #eval(String, Class)
    */
@@ -232,6 +234,7 @@ public class MVEL {
    * @param expression A string containing the expression to be evaluated
    * @param vars       The variables to be injected
    * @param toType     The target type that the resultant value will be converted to, if necessary.
+   * @param <T> type
    * @return The resultant value
    * @see #eval(String, VariableResolverFactory)
    * @see #eval(String, Class)
@@ -247,6 +250,7 @@ public class MVEL {
    * @param expression A string containing the expression to be evaluated.
    * @param vars       A map of vars to be injected
    * @param toType     The target type the resultant value will be converted to, if necessary.
+   * @param <T> type
    * @return The resultant value
    * @see #eval(String, org.mvel2.integration.VariableResolverFactory)
    */
@@ -268,6 +272,7 @@ public class MVEL {
    * @param ctx        The context object to evaluate against
    * @param vars       The vars to be injected
    * @param toType     The target type that the resultant value will be converted to, if necessary.
+   * @param <T> type
    * @return The resultant value.
    * @see #eval(String, Object, VariableResolverFactory)
    * @see #eval(String, Class)
@@ -284,6 +289,7 @@ public class MVEL {
    * @param ctx        The context object to evaluate against
    * @param vars       A Map of variables to be injected.
    * @param toType     The target type that the resultant value will be converted to, if necessary.
+   * @param <T> type
    * @return The resultant value.
    * @see #eval(String, Object, VariableResolverFactory)
    * @see #eval(String, Class)
@@ -439,6 +445,7 @@ public class MVEL {
    * @param ctx        The context object to evaluate against
    * @param vars       A Map of variables to be injected
    * @param toType     The target type the resultant value will be converted to, if necessary.
+   * @param <T> type
    * @return The resultant value
    * @see #eval(String, Object, Map, Class)
    */
@@ -453,6 +460,7 @@ public class MVEL {
    * @param expression A char[] containing the expression to be evaluated.
    * @param ctx        The context object to evaluate against
    * @param toType     The target type the resultant value will be converted to, if necessary.
+   * @param <T> type
    * @return The resultant value
    * @see #eval(String, Object, Class)
    */
@@ -468,6 +476,7 @@ public class MVEL {
    * @param ctx        The context object to evaluate against
    * @param vars       The variables to be injected
    * @param toType     The target type the resultant value will be converted to, if necessary.
+   * @param <T> type
    * @return The resultant value
    * @see #eval(String, Object, VariableResolverFactory, Class)
    */
@@ -482,6 +491,7 @@ public class MVEL {
    * @param expression A char[] containing the expression to be evaluated.
    * @param vars       The variables to be injected
    * @param toType     The target type the resultant value will be converted to, if necessary.
+   * @param <T> type
    * @return The resultant value
    * @see #eval(String, VariableResolverFactory, Class)
    */
@@ -496,6 +506,7 @@ public class MVEL {
    * @param expression A char[] containing the expression to be evaluated.
    * @param vars       The variables to be injected
    * @param toType     The target type the resultant value will be converted to, if necessary.
+   * @param <T> type
    * @return The resultant value
    * @see #eval(String, Map, Class)
    */
@@ -985,6 +996,7 @@ public class MVEL {
    * @param ctx                -
    * @param vars               -
    * @param toType             -
+   * @param <T> type
    * @return -
    */
   @SuppressWarnings({"unchecked"})
@@ -1002,6 +1014,7 @@ public class MVEL {
    * @param compiledExpression -
    * @param vars               -
    * @param toType             -
+   * @param <T> type
    * @return -
    */
   @SuppressWarnings({"unchecked"})
@@ -1015,6 +1028,7 @@ public class MVEL {
    * @param compiledExpression -
    * @param ctx                -
    * @param toType             -
+   * @param <T> type
    * @return -
    */
   public static <T> T executeExpression(final Object compiledExpression, final Object ctx, Class<T> toType) {
