@@ -938,25 +938,6 @@ public class TypesAndInferenceTests extends AbstractTest {
     assertTrue(false);
   }
 
-  public void testStrongTyping2() {
-    ParserContext ctx = new ParserContext();
-    ctx.setStrongTyping(true);
-
-    ctx.addInput("blah",
-            String.class);
-
-    try {
-      new ExpressionCompiler("1-blah", ctx).compile();
-    }
-    catch (Exception e) {
-      e.printStackTrace();
-      return;
-    }
-
-    assertTrue(false);
-  }
-
-
   public void testParameterizedTypeInStrictMode() {
     ParserContext ctx = new ParserContext();
     ctx.setStrongTyping(true);
@@ -1609,16 +1590,28 @@ public class TypesAndInferenceTests extends AbstractTest {
   }
 
   public void testPrimitiveDoubleAndNumberDivision() {
+    divisionDatatypeConversionHelper(double.class, Number.class, "5", BigDecimal.TEN, 0.5, 2.0);
+  }
+
+  public void testDoubleStringDivision() {
+    divisionDatatypeConversionHelper(double.class, String.class, 10.0, "0.5", 20.0, 0.05);
+  }
+
+  public void testBigDecimalStringDivision() {
+    divisionDatatypeConversionHelper(BigDecimal.class, String.class, BigDecimal.TEN, "0.5", 20.0, 0.05);
+  }
+
+  private void divisionDatatypeConversionHelper(Class<?> aClass, Class<?> bClass, Object aValue, Object bValue, double aDividesB, double bDividesA) {
     ParserContext parserContext = ParserContext.create().stronglyTyped()
-            .withInput("a", double.class)
-            .withInput("number", Number.class);
+            .withInput("a", aClass)
+            .withInput("b", bClass);
     final Map<String, Object> vars = new HashMap<String, Object>();
-    vars.put("a", "5");
-    vars.put("number", BigDecimal.TEN);
-    final Object doubleDividesNumber = executeExpression(compileExpression("a / number", parserContext), vars);
-    assertNumEquals(0.5, doubleDividesNumber);
-    final Object numberDividesDouble = executeExpression(compileExpression("number / a", parserContext), vars);
-    assertNumEquals(2.0, numberDividesDouble);
+    vars.put("a", aValue);
+    vars.put("b", bValue);
+    final Object execADividesB = executeExpression(compileExpression("a / b", parserContext), vars);
+    assertNumEquals(aDividesB, execADividesB);
+    final Object execBDividesA = executeExpression(compileExpression("b / a", parserContext), vars);
+    assertNumEquals(bDividesA, execBDividesA);
   }
 
 }

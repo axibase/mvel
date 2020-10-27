@@ -62,7 +62,7 @@ public class BinaryOperation extends BooleanNode {
     switch (operation) {
       case Operator.ADD:
         /**
-         * In the special case of Strings, the return type may leftward propogate.
+         * In the special case of Strings, the return type may leftward propagate.
          */
         if (left.getEgressType() == String.class || right.getEgressType() == String.class) {
           egressType = String.class;
@@ -146,10 +146,11 @@ public class BinaryOperation extends BooleanNode {
     }
     Class<?> boxedLeftClass = boxPrimitive(leftClass);
     Class<?> boxedRightClass = boxPrimitive(rightClass);
+    boolean leftIsNumber = Number.class.isAssignableFrom(boxedLeftClass);
+    boolean rightIsNumber = Number.class.isAssignableFrom(boxedRightClass);
     return
-           ( Number.class.isAssignableFrom(boxedRightClass) && Number.class.isAssignableFrom(boxedLeftClass) ) ||
-           ( (rightClass.isPrimitive() || leftClass.isPrimitive()) &&
-             canConvert(boxedLeftClass, boxedRightClass));
+            (leftIsNumber && rightIsNumber) ||
+                    ((leftIsNumber || leftClass.isPrimitive() || rightIsNumber || rightClass.isPrimitive()) && canConvert(boxedLeftClass, boxedRightClass));
   }
 
   public Object getReducedValueAccelerated(Object ctx, Object thisValue, VariableResolverFactory factory) {
