@@ -69,13 +69,13 @@ public strictfp class MathProcessor {
     if (type1 == BIG_DECIMAL) {
       if (type2 == BIG_DECIMAL) {
         return doBigDecimalArithmetic((BigDecimal) val1, operation, (BigDecimal) val2, false, -1);
-      } else if (type2 >= DataTypes.SHORT) {
+      } else if (isNumericOperation(type1, val1, operation, type2, val2)) {
         final InternalNumber internalNumber2 = createInternalNumber(val2, type2, name2);
         return doBigDecimalArithmeticHelper((BigDecimal)val1, internalNumber2, operation);
       } else {
         return _doOperations(type1, val1, operation, type2, val2);
       }
-    } else if (type2 == BIG_DECIMAL && type1 >= DataTypes.SHORT) {
+    } else if (type2 == BIG_DECIMAL && isNumericOperation(type1, val1, operation, type2, val2)) {
       final InternalNumber internalNumber1 = createInternalNumber(val1, type1, name1);
       return doBigDecimalArithmeticHelper(internalNumber1, (BigDecimal)val2, operation);
     }

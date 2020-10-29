@@ -4845,6 +4845,30 @@ public class CoreConfidenceTests extends AbstractTest {
     }
   }
 
+  @Test
+  public void testStringToNumberAutoConversion() {
+    final HashMap<String, Object> vars = new HashMap<String, Object>();
+    vars.put("decimal", new BigDecimal("20.00"));
+    vars.put("d", 20.0);
+    vars.put("str", new BigDecimal("4"));
+    assertNumEquals(new BigDecimal("5"), executeExpression(compileExpression("decimal / str"), null, vars));
+    assertNumEquals(new BigDecimal("0.2"), executeExpression(compileExpression("str / decimal"), null, vars));
+    assertNumEquals(5.0, executeExpression(compileExpression("d / str"), null, vars));
+    assertNumEquals(0.1, executeExpression(compileExpression("str / d"), null, vars));
+  }
+
+  @Test
+  public void testStringToNumberConcat() {
+    final HashMap<String, Object> vars = new HashMap<String, Object>();
+    vars.put("decimal", new BigDecimal("20.00"));
+    vars.put("d", 20.0);
+    vars.put("str", new BigDecimal("4"));
+    assertNumEquals(new BigDecimal("24"), executeExpression(compileExpression("decimal + str"), null, vars));
+    assertNumEquals(new BigDecimal("24"), executeExpression(compileExpression("str + decimal"), null, vars));
+    assertNumEquals(24.0, executeExpression(compileExpression("d + str"), null, vars));
+    assertNumEquals(24.0, executeExpression(compileExpression("str + d"), null, vars));
+  }
+
   public static class Values {
     public BigDecimal getDecimalValue() {
       return BigDecimal.ZERO;
