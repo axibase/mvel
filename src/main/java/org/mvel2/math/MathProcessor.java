@@ -104,35 +104,64 @@ public strictfp class MathProcessor {
 
   }
 
-  private static Object doPrimWrapperArithmetic(final Number val1, final int operation, final Number val2, boolean iNumber, int returnTarget) {
+  private static Object doPrimitiveDoubleArithmetic(final double val1, final int operation, final double val2, boolean iNumber, int returnTarget) {
     switch (operation) {
       case ADD:
-        return toType(val1.doubleValue() + val2.doubleValue(), returnTarget);
+        return toType(val1 + val2, returnTarget);
       case DIV:
-        return toType(val1.doubleValue() / val2.doubleValue(), returnTarget);
+        return toType(val1 / val2, returnTarget);
       case SUB:
-        return toType(val1.doubleValue() - val2.doubleValue(), returnTarget);
+        return toType(val1 - val2, returnTarget);
       case MULT:
-        return toType(val1.doubleValue() * val2.doubleValue(), returnTarget);
+        return toType(val1 * val2, returnTarget);
       case POWER:
-        return toType(Math.pow(val1.doubleValue(), val2.doubleValue()), returnTarget);
+        return toType(Math.pow(val1, val2), returnTarget);
       case MOD:
-        return toType(val1.doubleValue() % val2.doubleValue(), returnTarget);
+        return toType(val1 % val2, returnTarget);
       case GTHAN:
-        return val1.doubleValue() > val2.doubleValue() ? Boolean.TRUE : Boolean.FALSE;
+        return val1 > val2 ? Boolean.TRUE : Boolean.FALSE;
       case GETHAN:
-        return val1.doubleValue() >= val2.doubleValue() ? Boolean.TRUE : Boolean.FALSE;
+        return val1 >= val2 ? Boolean.TRUE : Boolean.FALSE;
       case LTHAN:
-        return val1.doubleValue() < val2.doubleValue() ? Boolean.TRUE : Boolean.FALSE;
+        return val1 < val2 ? Boolean.TRUE : Boolean.FALSE;
       case LETHAN:
-        return val1.doubleValue() <= val2.doubleValue() ? Boolean.TRUE : Boolean.FALSE;
+        return val1 <= val2 ? Boolean.TRUE : Boolean.FALSE;
       case EQUAL:
-        return val1.doubleValue() == val2.doubleValue() ? Boolean.TRUE : Boolean.FALSE;
+        return val1 == val2 ? Boolean.TRUE : Boolean.FALSE;
       case NEQUAL:
-        return val1.doubleValue() != val2.doubleValue() ? Boolean.TRUE : Boolean.FALSE;
+        return val1 != val2 ? Boolean.TRUE : Boolean.FALSE;
     }
     return null;
+  }
 
+  private static Object doPrimitiveLongArithmetic(final long val1, final int operation, final long val2, int returnTarget) {
+    switch (operation) {
+      case ADD:
+        return toType(val1 + val2, returnTarget);
+      case DIV:
+        return toType(val1 / val2, returnTarget);
+      case SUB:
+        return toType(val1 - val2, returnTarget);
+      case MULT:
+        return toType(val1 * val2, returnTarget);
+      case POWER:
+        return toType(Math.pow(val1, val2), returnTarget);
+      case MOD:
+        return toType(val1 % val2, returnTarget);
+      case GTHAN:
+        return val1 > val2 ? Boolean.TRUE : Boolean.FALSE;
+      case GETHAN:
+        return val1 >= val2 ? Boolean.TRUE : Boolean.FALSE;
+      case LTHAN:
+        return val1 < val2 ? Boolean.TRUE : Boolean.FALSE;
+      case LETHAN:
+        return val1 <= val2 ? Boolean.TRUE : Boolean.FALSE;
+      case EQUAL:
+        return val1 == val2 ? Boolean.TRUE : Boolean.FALSE;
+      case NEQUAL:
+        return val1 != val2 ? Boolean.TRUE : Boolean.FALSE;
+    }
+    return null;
   }
 
   private static Object toType(Number val, int returnType) {
@@ -267,9 +296,14 @@ public strictfp class MathProcessor {
         return doOperationsSameType(type1, val1, operation, val2);
       }
       else if (isNumericOperation(type1, val1, operation, type2, val2)) {
-        return doPrimWrapperArithmetic(getNumber(val1, type1),
+        if (isIntegerType(type1) && isIntegerType(type2)) {
+          return doPrimitiveLongArithmetic(getNumberAsLong(val1, type1),
+                  operation,
+                  getNumberAsLong(val2, type2), Math.max(box(type2), box(type1)));
+        }
+        return doPrimitiveDoubleArithmetic(getNumberAsDouble(val1, type1),
             operation,
-            getNumber(val2, type2), true, Math.max(box(type2), box(type1)));
+            getNumberAsDouble(val2, type2), true, Math.max(box(type2), box(type1)));
       }
       else if (operation != ADD &&
           (type1 == DataTypes.W_BOOLEAN || type2 == DataTypes.W_BOOLEAN) &&
@@ -719,45 +753,64 @@ public strictfp class MathProcessor {
     return type;
   }
 
-  private static Double getNumber(Object in, int type) {
+  private static double getNumberAsDouble(Object in, int type) {
     if (in == null || in == BlankLiteral.INSTANCE)
       return 0d;
     switch (type) {
       case BIG_DECIMAL:
-        return ((Number) in).doubleValue();
       case DataTypes.BIG_INTEGER:
-        return ((Number) in).doubleValue();
       case DataTypes.INTEGER:
       case DataTypes.W_INTEGER:
-        return ((Number) in).doubleValue();
       case DataTypes.LONG:
       case DataTypes.W_LONG:
-        return ((Number) in).doubleValue();
-      case DataTypes.STRING:
-        return Double.parseDouble((String) in);
       case DataTypes.FLOAT:
       case DataTypes.W_FLOAT:
-        return ((Number) in).doubleValue();
-      case DataTypes.DOUBLE:
-      case DataTypes.W_DOUBLE:
-        return (Double) in;
       case DataTypes.SHORT:
       case DataTypes.W_SHORT:
+      case DataTypes.DOUBLE:
+      case DataTypes.W_DOUBLE:
+      case DataTypes.W_BYTE:
+      case DataTypes.BYTE:
         return ((Number) in).doubleValue();
+      case DataTypes.STRING:
       case DataTypes.CHAR:
       case DataTypes.W_CHAR:
-        return Double.parseDouble(String.valueOf((Character) in));
+        return Double.parseDouble(String.valueOf(in));
       case DataTypes.BOOLEAN:
       case DataTypes.W_BOOLEAN:
         return ((Boolean) in) ? 1d : 0d;
+    }
+    throw new RuntimeException("cannot convert <" + in + "> to a numeric type: " + in.getClass() + " [" + type + "]");
+  }
+
+  private static long getNumberAsLong(Object in, int type) {
+    if (in == null || in == BlankLiteral.INSTANCE)
+      return 0L;
+    switch (type) {
+      case BIG_DECIMAL:
+      case DataTypes.BIG_INTEGER:
+      case DataTypes.INTEGER:
+      case DataTypes.W_INTEGER:
+      case DataTypes.LONG:
+      case DataTypes.W_LONG:
+      case DataTypes.FLOAT:
+      case DataTypes.W_FLOAT:
+      case DataTypes.SHORT:
+      case DataTypes.W_SHORT:
+      case DataTypes.DOUBLE:
+      case DataTypes.W_DOUBLE:
       case DataTypes.W_BYTE:
       case DataTypes.BYTE:
-        return ((Byte) in).doubleValue();
+        return ((Number) in).longValue();
+      case DataTypes.STRING:
+      case DataTypes.CHAR:
+      case DataTypes.W_CHAR:
+        return Long.parseLong(String.valueOf(in));
+      case DataTypes.BOOLEAN:
+      case DataTypes.W_BOOLEAN:
+        return ((Boolean) in) ? 1L : 0L;
     }
-
     throw new RuntimeException("cannot convert <" + in + "> to a numeric type: " + in.getClass() + " [" + type + "]");
-
-
   }
 
 
