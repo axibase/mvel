@@ -70,27 +70,38 @@ public strictfp class MathProcessor {
       if (type2 == BIG_DECIMAL) {
         return doBigDecimalArithmetic((BigDecimal) val1, operation, (BigDecimal) val2, false, -1);
       } else if (type2 >= DataTypes.SHORT) {
-        final InternalNumber internalNumberFromType;
-        try {
-          internalNumberFromType = getInternalNumberFromType(val2, type2);
-        } catch (Exception e) {
-          final String message;
-          if (name2 != null) {
-            message = "Could not convert " + name2 + " (" + val2 + ") to BigDecimal: " + e.getMessage();
-          } else {
-            message = "Could not convert number " + val2 + "to BigDecimal: " + e.getMessage();
-          }
-          throw new RuntimeException(message, e);
-        }
-        if (BigNan.NaN.equals(internalNumberFromType)) {
-          return doBigDecimalArithmeticWithNan((BigDecimal) val1, internalNumberFromType, operation);
-        }
-        return doBigDecimalArithmetic((BigDecimal) val1, operation, internalNumberFromType, false, -1);
+        final InternalNumber internalNumber2 = createInternalNumber(val2, type2, name2);
+        return doBigDecimalArithmeticHelper((BigDecimal)val1, internalNumber2, operation);
       } else {
         return _doOperations(type1, val1, operation, type2, val2);
       }
+    } else if (type2 == BIG_DECIMAL && type1 >= DataTypes.SHORT) {
+      final InternalNumber internalNumber1 = createInternalNumber(val1, type1, name1);
+      return doBigDecimalArithmeticHelper(internalNumber1, (BigDecimal)val2, operation);
     }
     return _doOperations(type1, val1, operation, type2, val2);
+  }
+
+  private static InternalNumber createInternalNumber(Object val, int type, String name) {
+    try {
+      return getInternalNumberFromType(val, type);
+    } catch (Exception e) {
+      final String message;
+      if (name != null) {
+        message = "Could not convert " + name + " (" + val + ") to BigDecimal: " + e.getMessage();
+      } else {
+        message = "Could not convert number " + val + "to BigDecimal: " + e.getMessage();
+      }
+      throw new RuntimeException(message, e);
+    }
+  }
+
+  private static Object doBigDecimalArithmeticHelper(BigDecimal val1, BigDecimal val2, int operation) {
+    if (BigNan.NaN.equals(val1) || BigNan.NaN.equals(val2)) {
+      return doBigDecimalArithmeticWithNan(val1, val2, operation);
+    }
+    return doBigDecimalArithmetic(val1, operation, val2, false, -1);
+
   }
 
   private static Object doPrimWrapperArithmetic(final Number val1, final int operation, final Number val2, boolean iNumber, int returnTarget) {
