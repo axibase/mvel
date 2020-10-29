@@ -4811,22 +4811,34 @@ public class CoreConfidenceTests extends AbstractTest {
   }
 
   @Test
-  public void testBigDecimalNanOperationWithoutNanSupport() {
-      final HashMap<String, Object> vars = new HashMap<String, Object>();
-      vars.put("a", BigDecimal.ZERO);
-      vars.put("b", Double.NaN);
-      try {
-        final Object res = executeExpression(compileExpression("a < b"), vars);
-        fail("Exception must be thrown");
-      } catch (Exception e) {
-        assertEquals("Could not convert b (NaN) to BigDecimal: Infinite or NaN", e.getMessage());
-      }
+  public void testBigDecimalNanOperationWithoutNanSupportBDLHS() {
+    final HashMap<String, Object> vars = new HashMap<String, Object>();
+    vars.put("decimalValue", BigDecimal.ZERO);
+    vars.put("doubleValue", Double.NaN);
+    doubleToBigDecimalConvertExceptionTestHelper("decimalValue < doubleValue", null, vars);
   }
 
   @Test
-  public void testBigDecimalNanOperationWithoutNanSupportGetter() {
+  public void testBigDecimalNanOperationWithoutNanSupportBDRHS() {
+    final HashMap<String, Object> vars = new HashMap<String, Object>();
+    vars.put("decimalValue", BigDecimal.ZERO);
+    vars.put("doubleValue", Double.NaN);
+    doubleToBigDecimalConvertExceptionTestHelper("doubleValue < decimalValue", null, vars);
+  }
+
+  @Test
+  public void testBigDecimalNanOperationWithoutNanSupportGetterBDLHS() {
+    doubleToBigDecimalConvertExceptionTestHelper("decimalValue < doubleValue", new Values(), null);
+  }
+
+  @Test
+  public void testBigDecimalNanOperationWithoutNanSupportGetterBDRHS() {
+    doubleToBigDecimalConvertExceptionTestHelper("doubleValue < decimalValue", new Values(), null);
+  }
+
+  private static void doubleToBigDecimalConvertExceptionTestHelper(String expression, Object ctx, Map vars) {
     try {
-      final Object res = executeExpression(compileExpression("decimalValue < doubleValue"), new Values());
+      final Object res = executeExpression(compileExpression(expression), ctx, vars);
       fail("Exception must be thrown");
     } catch (Exception e) {
       assertEquals("Could not convert doubleValue (NaN) to BigDecimal: Infinite or NaN", e.getMessage());
